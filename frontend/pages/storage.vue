@@ -36,7 +36,7 @@ import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import type { UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
 
 const upload = ref<UploadInstance>()
-const fileUpload = null;
+var fileUpload = null;
 const handleExceed: UploadProps['onExceed'] = (files) => {
   upload.value!.clearFiles()
   const file = files[0] as UploadRawFile

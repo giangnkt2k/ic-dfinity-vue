@@ -11,7 +11,6 @@ import "@connect2ic/core/style.css"
 /*
  * Import canister definitions like this:
  */
-import * as counter from "../../.dfx/local/canisters/counter"
 /*
  * Some examples to get you started
  */
@@ -35,12 +34,12 @@ const client = createClient({
     <div class="App">
       <div class="auth-section">
         <ConnectButton :onConnect="(async () => {
-  try {
-    const publicKey = await window.ic.plug.requestConnect();
-    console.log(`The connected user's public key is:`, publicKey);
-  } catch (e) {
-    console.log(e);
-  }
+          try {
+            const publicKey = await window.ic.plug.requestConnect();
+            console.log(`The connected user's public key is:`, publicKey);
+          } catch (e) {
+            console.log(e);
+          }
 })()" />
       </div>
       <ConnectDialog />

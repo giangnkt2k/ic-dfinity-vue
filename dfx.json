@@ -1,12 +1,12 @@
 {
   "canisters": {
-    "counter": {
-      "main": "canisters/counter/main.mo",
+    "dip721": {
+      "main": "canisters/dip721/main.mo",
       "type": "motoko"
     },
     "assets": {
       "dependencies": [
-        "counter"
+        "dip721"
       ],
       "frontend": {
         "entrypoint": "dist/index.html"
