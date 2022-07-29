@@ -115,6 +115,11 @@ button {
   right: 0;
 }
 
+.nav-link {
+  border: none;
+  text-decoration: auto;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(0.97);

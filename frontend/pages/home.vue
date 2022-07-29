@@ -34,13 +34,20 @@ const client = createClient({
   <Connect2ICProvider :client="client">
     <div class="App">
       <div class="auth-section">
-        <ConnectButton />
+        <ConnectButton :onConnect="(async () => {
+  try {
+    const publicKey = await window.ic.plug.requestConnect();
+    console.log(`The connected user's public key is:`, publicKey);
+  } catch (e) {
+    console.log(e);
+  }
+})()" />
       </div>
       <ConnectDialog />
       <header class="App-header">
         <img :src="logo" class="App-logo" alt="logo" />
         <p class="slogan">
-             <el-button type="primary">Connect Plug Wallet</el-button>
+             <el-button @click="onConnectPlugWallet()" type="primary">Connect Plug Wallet</el-button>
         </p>
       </header>
 

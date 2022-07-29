@@ -1,10 +1,15 @@
 import { def } from "@vue/shared";
 import {createRouter, createWebHashHistory} from "vue-router"
 import Home from "./pages/home.vue";
+import Storage from "./pages/storage.vue";
 const routes = [
     {
         path: "/home",
         component: Home
+    },
+    {
+      path: "/storage",
+      component: Storage
     }
 ];
 
