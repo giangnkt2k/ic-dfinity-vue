@@ -5,6 +5,7 @@
     mode="horizontal"
     :ellipsis="false"
     @select="handleSelect"
+    
   >
     <el-menu-item index="0">
       <img :src="logo" class="Menu-logo" alt="logo" />

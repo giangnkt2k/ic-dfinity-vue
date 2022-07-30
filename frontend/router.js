@@ -4,11 +4,13 @@ import Home from "./pages/home.vue";
 import Storage from "./pages/storage.vue";
 const routes = [
     {
-        path: "/home",
-        component: Home
+      path: "/",
+      name: 'Home',
+      component: Home
     },
     {
       path: "/storage",
+      name: 'Storage',
       component: Storage
     }
 ];

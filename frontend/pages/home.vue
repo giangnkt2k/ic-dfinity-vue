@@ -14,33 +14,32 @@ import "@connect2ic/core/style.css"
 /*
  * Some examples to get you started
  */
-import Counter from "../components/Counter.vue"
+// import Counter from "../components/Counter.vue"
 import Profile from "../components/Profile.vue"
 import Transfer from "../components/Transfer.vue"
 
 const client = createClient({
-  canisters: {
-    counter,
-  },
+
   providers: [new PlugWallet()],
   globalProviderConfig: {
     dev: import.meta.env.DEV,
   },
 })
+
+const onConnectPlugWallet = async () => {
+  try {
+    const publicKey = await window.ic.plug.requestConnect();
+    console.log(`The connected user's public key is:`, publicKey);
+  } catch (e) {
+    console.log(e);
+  }
+}
 </script>
 
 <template>
   <Connect2ICProvider :client="client">
     <div class="App">
       <div class="auth-section">
-        <ConnectButton :onConnect="(async () => {
-          try {
-            const publicKey = await window.ic.plug.requestConnect();
-            console.log(`The connected user's public key is:`, publicKey);
-          } catch (e) {
-            console.log(e);
-          }
-})()" />
       </div>
       <ConnectDialog />
       <header class="App-header">

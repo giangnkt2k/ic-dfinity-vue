@@ -9,8 +9,13 @@ import "@connect2ic/core/style.css"
 import Menu from "./components/Menu.vue";
 import { PlugWallet } from "@connect2ic/core/providers/plug-wallet"
 import Profile from "./components/Profile.vue"
+import { useRouter, useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 
 
+const router = useRouter()
+const currentRoute =  ref(router)
+console.log('currentRoute',currentRoute)
 const client = createClient({
 
   providers: [new PlugWallet()],
@@ -19,11 +24,20 @@ const client = createClient({
   },
 })
 
+watch(currentRoute, (selection, prevSelection) => { 
+   console.log('watcher') 
+})
+
 </script>
 
 <template>
   <div class="main">
+  <div class="header-main">
    <Menu />
+  </div>
+   <div class="banner">
+        <p style="margin-top: 100px;" class="text-zinc-500 text-lg font-medium">{{currentRoute.currentRoute.name}}</p>
+   </div>
   <router-view></router-view>
    <Connect2ICProvider :client="client">
       <div class="auth-section">
@@ -53,6 +67,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #424242;
+  background-color:#f6f6f6;
 }
 
 button {
@@ -139,15 +154,32 @@ button {
   align-items: center;
   text-align: right;
   position: fixed;
-  top: 0;
+  top: 60px !important;
   right: 0;
 }
-
+.banner {
+  width: 100%;
+  height: 400px;
+  margin-top: 40px;
+  text-align: center;
+  background: url('./assets/banner-bg.9aa89a17.png') no-repeat;
+  background-position: 50%;
+  padding: 40px 0;
+}
 .nav-link {
   border: none;
   text-decoration: auto;
 }
-
+.header-main {
+  background: #fff;
+  box-shadow: 0 10px 9px rgb(17 17 17 / 2%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  width: 100%;
+}
 @keyframes pulse {
   0% {
     transform: scale(0.97);
