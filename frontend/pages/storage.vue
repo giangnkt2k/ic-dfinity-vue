@@ -120,4 +120,6 @@ const mintNFT = async (item) => {
   })
   console.log('resssss',res)
 }
+
+// const getAllNfts = async () =>
 </script>

@@ -14,6 +14,9 @@
     <el-menu-item index="1">
     <router-link class="nav-link" to="/storage">Storage</router-link>
     </el-menu-item>
+    <el-menu-item index="1.2">
+    <router-link class="nav-link" to="/myNFT">My NFT</router-link>
+    </el-menu-item>
     <el-sub-menu index="2">
       <template #title>Workspace</template>
       <el-menu-item index="2-1">item one</el-menu-item>

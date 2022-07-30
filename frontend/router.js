@@ -2,6 +2,7 @@ import { def } from "@vue/shared";
 import {createRouter, createWebHashHistory} from "vue-router"
 import Home from "./pages/home.vue";
 import Storage from "./pages/storage.vue";
+import myNFT from "./pages/myNFT.vue";
 const routes = [
     {
       path: "/",
@@ -12,7 +13,12 @@ const routes = [
       path: "/storage",
       name: 'Storage',
       component: Storage
-    }
+    },
+    {
+      path: "/myNFT",
+      name: 'My NFT',
+      component: myNFT
+    },
 ];
 
 const router = createRouter({
