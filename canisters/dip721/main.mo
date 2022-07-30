@@ -129,11 +129,15 @@ shared actor class Dip721 () = Self {
 		_transfer(from, to, tokenId);
 	};
 
-    public shared(msg) func mint(metadata: Types.metadata) : async Types.MintResult {
+    public shared func mint(to: Principal, metadata: Types.metadata) : async Types.MintResult {
 		TokenCounter += 1;
-		_mint(msg.caller, TokenCounter, metadata);
+		_mint(to, TokenCounter, metadata);
 		return #Ok(TokenCounter);
 	};
+
+    public query func getAllNfts(): async [(TokenId, Types.metadata)] {
+        return Iter.toArray<(TokenId, Types.metadata)>(tokenIdToMetadata.entries());
+    };
 
     //Internal
 
@@ -238,6 +242,7 @@ shared actor class Dip721 () = Self {
 	};
 
     private func _mint(to : Principal, tokenId : Nat, metadata : Types.metadata) : () {
+    assert to != Principal.isAnonymous(to);
 		assert not _exists(tokenId);
 		
 		_incrementBalance(to);
