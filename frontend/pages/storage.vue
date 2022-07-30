@@ -2,59 +2,100 @@
     <div class="container mx-auto px-4">
         <div class="navigation mt-8">
             <el-upload
-                ref="upload"
                 class="upload-demo"
                 action="#"
-                :limit="1"
-                :on-exceed="handleExceed"
-                :auto-upload="false"
-            >
-                <template #trigger>
-                <el-button class="text-blue-600" type="primary">select file</el-button>
-                </template>
-                <el-button class="ml-3 text-green-600" type="success" @click="submitUpload">
-                upload to server
+                :before-upload="beforeAvatarUpload"
+                multiple
+                :limit="3"
+              >
+                <el-button size="small" type="primary">
+                  Click to upload
                 </el-button>
-                <template #tip>
-                <div class="el-upload__tip text-red">
-                    limit 1 file, new file will cover the old file
-                </div>
-                </template>
-            </el-upload>
+              </el-upload>
         </div>
-        <div class="list-card">
-
+        
+        <div class="list-card"
+        v-for="(item,index) in listImage"
+        :key="index">
+          <Card 
+          :prop-url="item.url"
+          :prop-name="item.file.name"
+          :prop-date="item.file.lastModifiedDate"
+          @minting="mintNFT(item)"
+          />
         </div>
     </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeMount, setup, computed, reactive } from 'vue'
+import Main from '../../canisters/dip721/main.mo'
 import { genFileId } from 'element-plus'
 import process from 'process'
 import minimist from 'minimist'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 import type { UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
+import Card from '../components/Card.vue';
+const tokenWeb3 = import.meta.env.VITE_WEB3STORAGE_TOKEN;
 
 const upload = ref<UploadInstance>()
-var fileUpload = null;
-const handleExceed: UploadProps['onExceed'] = (files) => {
-  upload.value!.clearFiles()
-  const file = files[0] as UploadRawFile
-  file.uid = genFileId()
-  fileUpload = upload.value!.handleStart(file)
-    console.log('pathFiles',pathFiles)
-    console.log('file',upload.value!.handleStart(file))
-  
+const listImage = ref([]);
+var releaseImages = [];
+ onMounted(() => {
+  getList()
+})
+const beforeAvatarUpload: UploadProps['beforeUpload'] = async (rawFile) => {
+  if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error('Avatar picture size can not exceed 2MB!')
+    return false
+  }
+    const token = tokenWeb3;
+    const storage = new Web3Storage({ token })
+    console.log(`Uploading files`)
+    const cid = await storage.put([rawFile])
+    console.log('Content added with CID:', cid)
+  return true
 }
 
-const submitUpload = async () => {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEI2NTkzRjYwODdmYTY3NzE2M0YwNDdEZGMwRDE5YTMxNTBhMTgzOGEiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTkwNjg2NDI2NjcsIm5hbWUiOiJzdHJvcmFnZUcifQ.X5HhMh2UiYJ_dDELj7c1NP6E3Lgw8KnnjwiBhqjGNtw';
-    console.log('upload', upload.value);
-    const storage = new Web3Storage({ token })
-    const files = []
-    console.log('fileUpload',fileUpload)
-    const pathFiles = await getFilesFromPath(upload)
-    console.log('pathFiles',pathFiles)
-//   upload.value!.submit()
+const makeStorageClient = () => {
+   const token = tokenWeb3;
+   return new Web3Storage({ token: token })
+}
+
+const makeGatewayURL = (cid, name) => {
+  return `https://${cid}.ipfs.dweb.link/${name}`;
+}
+
+const retrieveFiles = async (cid, upload, client) => {
+  const res = await client.get(cid)
+  if (!res.ok) {
+    throw new Error(`failed to get ${cid} - [${res.status}] ${res.statusText}`)
+  }
+  // unpack File objects from the response
+  const files = await res.files()
+  for (const file of files) {
+    listImage.value.push({
+      file: file,
+      upload: upload,
+      url: makeGatewayURL(cid, file.name)
+    })
+  }
+}
+
+const getList = async () => {
+  const client = makeStorageClient()
+  for await (const upload of client.list()) {
+    retrieveFiles(upload.cid, upload, client);
+  }
+  return(listImage._rawValue);
+}
+
+const mintNFT = async (item) => {
+  console.log('minting', item);
+  const res = await Main.mint({
+    url : item.url,
+    name: item.file.name,
+    description: item.upload.cid,
+    attribute: [item.file]
+  })
 }
 </script>

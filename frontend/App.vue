@@ -7,12 +7,40 @@ import { defaultProviders } from "@connect2ic/core/providers"
 import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/vue"
 import "@connect2ic/core/style.css"
 import Menu from "./components/Menu.vue";
+import { PlugWallet } from "@connect2ic/core/providers/plug-wallet"
+import Profile from "./components/Profile.vue"
+
+
+const client = createClient({
+
+  providers: [new PlugWallet()],
+  globalProviderConfig: {
+    dev: import.meta.env.VITE_DEV,
+  },
+})
+
 </script>
 
 <template>
   <div class="main">
-  <Menu />
+   <Menu />
   <router-view></router-view>
+   <Connect2ICProvider :client="client">
+      <div class="auth-section">
+        <ConnectButton :onConnect="(async () => {
+          try {
+            const publicKey = await window.ic.plug.requestConnect();
+            console.log(`The connected user's public key is:`, publicKey);
+          } catch (e) {
+            console.log(e);
+          }
+})()" />
+      </div>
+      <ConnectDialog />
+      <div class="examples">
+        <Profile />
+      </div>
+  </Connect2ICProvider>
   </div>
 </template>
 
