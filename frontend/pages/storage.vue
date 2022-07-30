@@ -28,7 +28,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, setup, computed, reactive } from 'vue'
-import Main from '../../canisters/dip721/main.mo'
+import {dip721} from 'canisters/dip721'
 import { genFileId } from 'element-plus'
 import process from 'process'
 import minimist from 'minimist'
@@ -91,11 +91,12 @@ const getList = async () => {
 
 const mintNFT = async (item) => {
   console.log('minting', item);
-  const res = await Main.mint({
+  const res = await dip721.mint({
     url : item.url,
     name: item.file.name,
     description: item.upload.cid,
-    attribute: [item.file]
+    attribute: []
   })
+  console.log('resssss',res)
 }
 </script>
