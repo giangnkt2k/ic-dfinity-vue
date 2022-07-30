@@ -1,4 +1,5 @@
 import Array "mo:base/Array";
+import Debug "mo:base/Debug";
 import Error "mo:base/Error";
 import Hash "mo:base/Hash";
 import HashMap "mo:base/HashMap";
@@ -135,9 +136,36 @@ shared actor class Dip721 () = Self {
 		return #Ok(TokenCounter);
 	};
 
-    public query func getAllNfts(): async [(TokenId, Types.metadata)] {
-        return Iter.toArray<(TokenId, Types.metadata)>(tokenIdToMetadata.entries());
+  public query func getAllNfts(): async [(TokenId, Types.metadata)] {
+      return Iter.toArray<(TokenId, Types.metadata)>(tokenIdToMetadata.entries());
+  };
+
+  public shared query(msg) func getMyNfts(): async [(TokenId, Types.metadata)] {
+    var caller = msg.caller;
+    var iterTokenId = Iter.filter<(TokenId, Principal)>(
+        tokenIdToOwner.entries(),func ((tokenId: TokenId, owner: Principal)): Bool {
+          owner == caller;
+        }
+      );
+
+    Debug.print(debug_show(Iter.size(iterTokenId)));
+
+    let f = func ((tokenId: TokenId, owner: Principal)): ((TokenId, Types.metadata)) {
+            Debug.print(debug_show(tokenId));
+            var data = tokenIdToMetadataTmp.get(tokenId);
+            Debug.print(debug_show(data));
+            return data;
     };
+
+    let result = Iter.map(iterTokenId, f);
+
+    // for (data in result.next()) {
+    //     Debug.print(debug_show(data));
+    // };
+    Debug.print(debug_show(Iter.size(result)));
+
+    return Iter.toArray(result);
+  };
     //Internal
 
     private func _isApprovedForAll(owner: Principal, to: Principal): Bool {
@@ -241,7 +269,7 @@ shared actor class Dip721 () = Self {
 	};
 
     private func _mint(to : Principal, tokenId : Nat, metadata : Types.metadata) : () {
-    assert to != Principal.isAnonymous(to);
+    // assert to != Principal.isAnonymous(to);
 		assert not _exists(tokenId);
 		
 		_incrementBalance(to);
@@ -249,12 +277,11 @@ shared actor class Dip721 () = Self {
 		tokenIdToMetadata.put(tokenId,metadata)
 	};
 
-    private func _unwrap<T>(x : ?T) : T {
-		switch x {
-			case null { P.unreachable() };
-			case (?x_) { x_ };
-		}
-	};
+    private func _unwrap<T>(x : ?T) : T =
+        switch x {
+            case null { P.unreachable() };
+            case (?x_) { x_ };
+    };
 
     private func _burn(tokenId : Nat) {
 		let owner = _unwrap(_ownerOf(tokenId));
