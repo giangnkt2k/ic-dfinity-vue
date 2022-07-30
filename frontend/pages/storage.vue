@@ -8,21 +8,42 @@
                 multiple
                 :limit="3"
               >
-                <el-button size="small" type="primary">
+                <el-button size="small" type="primary" class="text-blue-600">
                   Click to upload
                 </el-button>
               </el-upload>
         </div>
-        
-        <div class="list-card"
-        v-for="(item,index) in listImage"
-        :key="index">
-          <Card 
-          :prop-url="item.url"
-          :prop-name="item.file.name"
-          :prop-date="item.file.lastModifiedDate"
-          @minting="mintNFT(item)"
-          />
+        <div v-if="listImage.length < 1" class="block  grid grid-cols-4 gap-4">
+          <el-skeleton v-for="item in 4" :key="item" style="width: 240px" animated>
+            <template #template>
+              <el-skeleton-item variant="image" style="width: 240px; height: 240px" />
+              <div style="padding: 14px">
+                <el-skeleton-item variant="p" style="width: 50%" />
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-items: space-between;
+                  "
+                >
+                  <el-skeleton-item variant="text" style="margin-right: 16px" />
+                  <el-skeleton-item variant="text" style="width: 30%" />
+                </div>
+              </div>
+            </template>
+          </el-skeleton>
+        </div>
+        <div class="block  grid grid-cols-4 gap-4">
+          <div class="list-card"
+          v-for="(item,index) in listImage"
+          :key="index">
+            <Card 
+            :prop-url="item.url"
+            :prop-name="item.file.name"
+            :prop-date="item.file.lastModifiedDate"
+            @minting="mintNFT(item)"
+            />
+          </div>
         </div>
     </div>
 </template>

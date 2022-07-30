@@ -4,9 +4,11 @@
         <img
           :src="propUrl"
           class="image"
+          fit="cover"
+          style="width: 100%; height: 300px"
         />
         <div style="padding: 14px">
-          <span>{{ propName }}</span>
+          <span style="word-break: break-all;">{{ propName }}</span>
           <div class="bottom">
             <time class="time">{{ propDate }}</time>
             <el-button @click="minting" text class="button">Mint NFT</el-button>

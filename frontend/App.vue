@@ -37,7 +37,7 @@ const client = createClient({
 })()" />
       </div>
       <ConnectDialog />
-      <div class="examples">
+      <div style="margin: auto;padding: 30px 100px;">
         <Profile />
       </div>
   </Connect2ICProvider>
