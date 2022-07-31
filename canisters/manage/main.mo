@@ -14,7 +14,7 @@ actor {
 
   private var userIdToInfo: HashMap.HashMap<Nat, Types.UserInfoWithId> = HashMap.fromIter<Nat, Types.UserInfoWithId>(userStore.vals(), 0, Nat.equal, Hash.hash);
 
-  public func createAccount(data: Types.UserInfo): async () {
+  public shared func createAccount(data: Types.UserInfo): async () {
     idCounter += 1;
     var id = idCounter;
     var result: Types.UserInfoWithId = {
@@ -30,7 +30,7 @@ actor {
     userIdToInfo.put(id, result);
   };
 
-  public query func readAccount(): async [Types.UserInfoWithId] {
+  public shared query func readAccount(): async [Types.UserInfoWithId] {
     var result = Buffer.Buffer<Types.UserInfoWithId>(0);
     for (v in userIdToInfo.vals()){
       result.add(v)
@@ -39,7 +39,7 @@ actor {
     return result.toArray();
   };
 
-  public func updateAccount(data: Types.UserInfoWithId): async () {
+  public shared func updateAccount(data: Types.UserInfoWithId): async () {
     assert Option.isSome(userIdToInfo.get(data.id));
      var newData: Types.UserInfoWithId = {
       first_name = data.first_name;
@@ -54,7 +54,7 @@ actor {
     userIdToInfo.put(data.id, newData);
   };
 
-  public func deleteAccount(id: Nat) : async () {
+  public shared func deleteAccount(id: Nat) : async () {
     assert Option.isSome(userIdToInfo.get(id));
     var result = userIdToInfo.remove(id);
   };
