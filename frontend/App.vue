@@ -22,11 +22,7 @@ const client = createClient({
   globalProviderConfig: {
     dev: import.meta.env.VITE_DEV,
   },
-})
-
-watch(currentRoute, (selection, prevSelection) => { 
-   console.log('watcher') 
-})
+}) 
 
 </script>
 

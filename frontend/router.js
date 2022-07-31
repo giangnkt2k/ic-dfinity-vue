@@ -3,6 +3,7 @@ import {createRouter, createWebHashHistory} from "vue-router"
 import Home from "./pages/home.vue";
 import Storage from "./pages/storage.vue";
 import myNFT from "./pages/myNFT.vue";
+import Customer from "./pages/customer.vue";
 const routes = [
     {
       path: "/",
@@ -18,6 +19,11 @@ const routes = [
       path: "/myNFT",
       name: 'My NFT',
       component: myNFT
+    },
+    {
+      path: "/customer",
+      name: 'Customer',
+      component: Customer
     },
 ];
 

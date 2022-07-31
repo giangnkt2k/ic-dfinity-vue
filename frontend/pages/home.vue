@@ -26,7 +26,7 @@ const client = createClient({
   },
 })
 
-const onConnectPlugWallet = async () => {
+const onConnectPlug = async () => {
   try {
     const publicKey = await window.ic.plug.requestConnect();
     console.log(`The connected user's public key is:`, publicKey);
@@ -45,7 +45,7 @@ const onConnectPlugWallet = async () => {
       <header class="App-header">
         <img :src="logo" class="App-logo" alt="logo" />
         <p class="slogan">
-             <el-button @click="onConnectPlugWallet()" type="primary">Connect Plug Wallet</el-button>
+             <el-button @click="onConnectPlug" type="primary">Connect Plug Wallet</el-button>
         </p>
       </header>
 
