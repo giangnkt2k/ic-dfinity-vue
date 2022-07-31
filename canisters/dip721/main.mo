@@ -1,4 +1,5 @@
 import Array "mo:base/Array";
+import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Error "mo:base/Error";
 import Hash "mo:base/Hash";
@@ -130,9 +131,9 @@ shared actor class Dip721 () = Self {
 		_transfer(from, to, tokenId);
 	};
 
-    public shared(msg) func mint(metadata: Types.metadata) : async Types.MintResult {
-		TokenCounter += 1;
-		_mint(msg.caller, TokenCounter, metadata);
+    public shared func mint(to: Principal, metadata: Types.metadata) : async Types.MintResult {
+      TokenCounter += 1;
+      _mint(to, TokenCounter, metadata);
 		return #Ok(TokenCounter);
 	};
 
@@ -140,31 +141,30 @@ shared actor class Dip721 () = Self {
       return Iter.toArray<(TokenId, Types.metadata)>(tokenIdToMetadata.entries());
   };
 
-  public shared query(msg) func getMyNfts(): async [(TokenId, Types.metadata)] {
-    var caller = msg.caller;
-    var iterTokenId = Iter.filter<(TokenId, Principal)>(
-        tokenIdToOwner.entries(),func ((tokenId: TokenId, owner: Principal)): Bool {
-          owner == caller;
-        }
-      );
+  public shared query func getMyNfts(address: Principal): async [Types.NftResp] {
+    var tokenIds = Buffer.Buffer<(TokenId)>(0);
+    Iter.iterate(
+        tokenIdToOwner.entries(),func ((tokenId: TokenId, owner: Principal), index: Nat) {
+          if (owner == address) {
+            tokenIds.add(tokenId);
+          };
+        });
 
-    Debug.print(debug_show(Iter.size(iterTokenId)));
+    var result = Buffer.Buffer<Types.NftResp>(10);
+    for (i in Iter.fromArray(tokenIds.toArray())) {
+      var data = _unwrap(tokenIdToMetadata.get(i));
 
-    let f = func ((tokenId: TokenId, owner: Principal)): ((TokenId, Types.metadata)) {
-            Debug.print(debug_show(tokenId));
-            var data = tokenIdToMetadataTmp.get(tokenId);
-            Debug.print(debug_show(data));
-            return data;
+      var new_data: Types.NftResp = {
+        id= i;
+        name= data.name;
+        url= data.url;
+        description= data.description;
+      };
+
+      result.add(new_data);
     };
 
-    let result = Iter.map(iterTokenId, f);
-
-    // for (data in result.next()) {
-    //     Debug.print(debug_show(data));
-    // };
-    Debug.print(debug_show(Iter.size(result)));
-
-    return Iter.toArray(result);
+    return result.toArray();
   };
     //Internal
 

@@ -14,7 +14,6 @@ module {
         name: Text;
         url: Text;
         description: Text;
-        attribute: [?attributeKeyValue];
     };
 
     public type ApiError = {
@@ -27,6 +26,13 @@ module {
     public type Result<T, E> = {
         #Ok: T;
         #Err: E;
+    };
+
+    public type NftResp = {
+        id: Nat;
+        name: Text;
+        url: Text;
+        description: Text;
     };
 
     public type OwnerResult = Result<Principal, ApiError>;
