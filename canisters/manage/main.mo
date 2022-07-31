@@ -20,7 +20,7 @@ actor {
     var result: Types.UserInfoWithId = {
       first_name = data.first_name;
       last_name = data.last_name;
-      full_name = data.first_name # data.last_name;
+      full_name = data.first_name # " " # data.last_name;
       id = id;
       date = data.date;
       phone = data.phone;
@@ -44,7 +44,7 @@ actor {
      var newData: Types.UserInfoWithId = {
       first_name = data.first_name;
       last_name = data.last_name;
-      full_name = data.first_name # data.last_name;
+      full_name = data.first_name # " " # data.last_name;
       id = data.id;
       date = data.date;
       phone = data.phone;
