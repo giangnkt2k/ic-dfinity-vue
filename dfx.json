@@ -10,7 +10,8 @@
     },
     "assets": {
       "dependencies": [
-        "dip721"
+        "dip721",
+        "manage"
       ],
       "frontend": {
         "entrypoint": "dist/index.html"

@@ -17,9 +17,11 @@ import "@connect2ic/core/style.css"
 // import Counter from "../components/Counter.vue"
 import Profile from "../components/Profile.vue"
 import Transfer from "../components/Transfer.vue"
-
+import * as counter from "../../.dfx/local/canisters/manage"
 const client = createClient({
-
+  canisters : {
+    counter
+  },
   providers: [new PlugWallet()],
   globalProviderConfig: {
     dev: import.meta.env.DEV,

@@ -12,17 +12,28 @@ import Profile from "./components/Profile.vue"
 import { useRouter, useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
 
+import * as counter from "../.dfx/local/canisters/manage"
 
 const router = useRouter()
 const currentRoute =  ref(router)
 console.log('currentRoute',currentRoute)
 const client = createClient({
-
+  canisters: {
+    counter,
+  },
   providers: [new PlugWallet()],
   globalProviderConfig: {
     dev: import.meta.env.VITE_DEV,
   },
 }) 
+const onBtnConnectPlug = async () => {
+   try {
+    const publicKey = await window.ic.plug.requestConnect();
+    console.log(`The connected user's public key is:`, publicKey);
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 </script>
 
@@ -37,14 +48,7 @@ const client = createClient({
   <router-view></router-view>
    <Connect2ICProvider :client="client">
       <div class="auth-section">
-        <ConnectButton :onConnect="(async () => {
-          try {
-            const publicKey = await window.ic.plug.requestConnect();
-            console.log(`The connected user's public key is:`, publicKey);
-          } catch (e) {
-            console.log(e);
-          }
-})()" />
+        <ConnectButton :onConnect="onBtnConnectPlug"/>
       </div>
       <ConnectDialog />
       <div style="margin: auto;padding: 30px 100px;">

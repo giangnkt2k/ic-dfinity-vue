@@ -6,7 +6,7 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column fixed prop="id" label="ID" width="150" />
       <el-table-column prop="full_name" label="Name" />
-      <el-table-column prop="birthday" label="Birthday" />
+      <el-table-column prop="date" label="Birthday" />
       <el-table-column prop="phone" label="Phone" />
       <el-table-column prop="sex" label="Sex" />
       <el-table-column prop="address" label="Sex" />
@@ -32,13 +32,13 @@
         </el-form-item>
         <el-form-item label="Sex" :label-width="formLabelWidth">
           <el-radio-group v-model="formData.sex">
-            <el-radio :label="0">Male</el-radio>
-            <el-radio :label="1">Female</el-radio>
+            <el-radio :label="true">Male</el-radio>
+            <el-radio :label="false">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="Birthday" :label-width="formLabelWidth">
           <el-date-picker
-            v-model="formData.birthday"
+            v-model="formData.date"
             type="date"
             placeholder="Pick a day"
             size="small"
@@ -54,7 +54,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">Confirm</el-button>
+          <el-button type="primary" @click="confirmEdit">Confirm</el-button>
         </span>
       </template>
     </el-dialog>
@@ -88,17 +88,12 @@
         </el-form-item>
         <el-form-item label="Sex" :label-width="formLabelWidth">
           <el-radio-group v-model="formData.sex">
-            <el-radio :label="0">Male</el-radio>
-            <el-radio :label="1">Female</el-radio>
+            <el-radio :label="true">Male</el-radio>
+            <el-radio :label="false">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="Birthday" :label-width="formLabelWidth">
-          <el-date-picker
-            v-model="formData.birthday"
-            type="date"
-            placeholder="Pick a day"
-            size="small"
-          />
+         <el-input v-model="formData.date" autocomplete="off" />
         </el-form-item>
         <el-form-item label="Phone" :label-width="formLabelWidth">
           <el-input v-model="formData.phone" autocomplete="off" />
@@ -110,7 +105,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisibleCreate = false">Cancel</el-button>
-          <el-button type="primary" @click="dialogFormVisibleCreate = false"
+          <el-button type="primary" @click="handleCreate"
             >Confirm</el-button
           >
         </span>
@@ -119,19 +114,22 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
-
+import { reactive, ref, onMounted } from "vue";
+import {manage} from 'canisters/manage';
 const dialogFormVisible = ref(false);
 const dialogFormVisibleDelete = ref(false);
 const dialogFormVisibleCreate = ref(false);
 const idDel = ref();
 const formLabelWidth = "140px";
+ onMounted(() => {
+  getList()
+})
 const formData = reactive({
   id: "",
   first_name: "",
   last_name: "",
   full_name: "",
-  birthday: "",
+  date: "",
   phone: "",
   sex: "",
   address: "",
@@ -141,7 +139,7 @@ const resetForm = () => {
   formData.first_name = '';
   formData.last_name = '';
   formData.full_name = '';
-  formData.birthday = '';
+  formData.date = '';
   formData.phone = '';
   formData.sex = '';
   formData.address = '';
@@ -153,20 +151,38 @@ const handleClickEdit = (scope) => {
   formData.first_name = scope.first_name;
   formData.last_name = scope.last_name;
   formData.full_name = scope.first_name + " " + scope.last_name;
-  formData.birthday = scope.birthday;
+  formData.date = scope.date;
   formData.phone = scope.phone;
   formData.sex = scope.sex;
   formData.address = scope.address;
   dialogFormVisible.value = true;
 };
+
+const confirmEdit = async () => {
+    try {
+        const res = await manage.updateAccount(formData)
+        console.log(res)
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 const handleDelete = (scope) => {
   console.log("click22", scope.id);
   dialogFormVisibleDelete.value = true;
   idDel.value = scope.id;
+
 };
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   console.log("idDel", idDel.value);
+    try {
+        const res = await manage.deleteAccount(idDel.value);
+  } 
+  catch(e) {
+    console.log(e)
+  }
+
   dialogFormVisibleDelete.value = false;
 };
 
@@ -174,27 +190,34 @@ const openCreate = () => {
   dialogFormVisibleCreate.value = true;
 };
 
-const tableData = [
-  {
-    id: "2016-05-03",
-    full_name: "Tom",
-    last_name: "Tom",
-    first_name: "Ok",
-    birthday: "2022-07-17",
-    phone: "02316546",
-    sex: 0,
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    id: "2016-05-03",
-    full_name: "Tom",
-    last_name: "Tom",
-    first_name: "Ok",
-    birthday: "California",
-    phone: "Los Angeles",
-    sex: "No. 189, Grove St, Los Angeles",
-    address: "",
-  },
-];
+const tableData = ref([]);
+const handleCreate = async () => {
+    try {
+        
+        const res = await manage.createAccount({
+            first_name : formData.first_name,
+            last_name : formData.last_name,
+            full_name : 'abc',
+            date : formData.date,
+            phone : formData.phone,
+            sex : formData.sex,
+            address : formData.address
+         })
+        console.log('res',res)
+         await  getList()
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+const getList = async () => {
+    try {
+        const res = await manage.readAccount()
+        console.log('getList', res)
+        tableData.value = res
+    } catch (e) {
+
+    }
+} 
 </script>
 <style lang=""></style>
