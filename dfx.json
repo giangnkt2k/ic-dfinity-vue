@@ -4,6 +4,10 @@
       "main": "canisters/dip721/main.mo",
       "type": "motoko"
     },
+    "manage": {
+      "main": "canisters/manage/main.mo",
+      "type": "motoko"
+    },
     "assets": {
       "dependencies": [
         "dip721"
